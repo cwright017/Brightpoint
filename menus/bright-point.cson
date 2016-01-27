@@ -1,0 +1,22 @@
+# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Toggle bright-point'
+      'command': 'bright-point:toggle'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'bright-point'
+      'submenu': [
+        {
+          'label': 'Toggle'
+          'command': 'bright-point:toggle'
+        }
+      ]
+    ]
+  }
+]

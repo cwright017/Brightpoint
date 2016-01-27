@@ -1,0 +1,32 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+@import "syntax-variables";
+
+.bright-point {
+
+}
+
+@red-color: @syntax-color-removed;
+@green-color: @syntax-color-added;
+@blue-color: @syntax-color-renamed;
+
+.line-number-red {
+    color: #fff;
+    background-color: @green-color;
+}
+
+atom-text-editor::shadow .gutter .line-number  {
+
+  &.red-circle {
+    // position: relative;
+    // height: 4px;
+    // width: 4px;
+    // padding: 2px;
+    color: #FFF;
+    background-color: #DB1D1D;
+    // border-radius: 150px;
+  }
+}
