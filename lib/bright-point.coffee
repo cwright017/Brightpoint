@@ -1,77 +1,30 @@
-BrightPointView = require './bright-point-view'
+Debugger = require './Debugger'
 {CompositeDisposable} = require 'atom'
 $ = require 'jquery'
 
+
 module.exports = BrightPoint =
   subscriptions: null
+  panes: []
+
+  observePane: ->
+    console.log "new pane - observing"
+
 
   activate: (state) ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:toggle': => @toggle()
 
-    editor = atom.workspace.getActiveTextEditor()
-    markerLayer = editor.addMarkerLayer({options: true})
+    console.log @panes.length
+    # atom.workspace.onDidStopChangingActivePaneItem (pane) ->
+    atom.workspace.observeActivePaneItem (activePane) =>
+      console.log @panes.indexOf activePane
 
-    @editorElement = atom.views.getView editor
-    gutter = @editorElement.shadowRoot.querySelector('.gutter')
+      if @panes.indexOf(activePane) == -1
+        console.log "observing"
+        RokuDebug = new Debugger()
+        RokuDebug.observeCurrentPane()
+      else
+        console.log "old pane bra"
 
-    $(gutter).on 'click', (event) ->
-      console.log editor.getGrammar().scopeName
-      if editor.getGrammar().scopeName == 'source.brightscript'
-        current = editor.getCursorBufferPosition()
-        current.row -= 1
-
-        console.log current
-        console.log markerLayer.getMarkers()
-        lineMarker = markerLayer.findMarkers(containsBufferPosition: current)
-        console.log lineMarker
-
-        if lineMarker.length
-           editor.selectMarker(lineMarker[0])
-           editor.deleteLine()
-           lineMarker[0].destroy()
-
-        else
-          editor.moveUp(0)
-          editor.insertNewlineAbove()
-          editor.insertText 'STOP'
-
-          newMarker = markerLayer.markBufferPosition(current)
-          editor.decorateMarkerLayer(markerLayer, {type: 'line-number', class: 'red-circle' })
-
-    
-
-
-  toggle: ->
-    @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:toggle': => @toggle()
-
-    editor = atom.workspace.getActiveTextEditor()
-    markerLayer = editor.addMarkerLayer({options: true})
-
-    @editorElement = atom.views.getView editor
-    gutter = @editorElement.shadowRoot.querySelector('.gutter')
-
-    $(gutter).on 'click', (event) ->
-      console.log editor.getGrammar().scopeName
-      if editor.getGrammar().scopeName == 'source.brightscript'
-        current = editor.getCursorBufferPosition()
-        current.row -= 1
-
-        console.log current
-        console.log markerLayer.getMarkers()
-        lineMarker = markerLayer.findMarkers(containsBufferPosition: current)
-        console.log lineMarker
-
-        if lineMarker.length
-           editor.selectMarker(lineMarker[0])
-           editor.deleteLine()
-           lineMarker[0].destroy()
-
-        else
-          editor.moveUp(0)
-          editor.insertNewlineAbove()
-          editor.insertText 'STOP'
-
-          newMarker = markerLayer.markBufferPosition(current)
-          editor.decorateMarkerLayer(markerLayer, {type: 'line-number', class: 'red-circle' })
+      @panes.push activePane
