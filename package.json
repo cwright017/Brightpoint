@@ -1,6 +1,6 @@
 {
-  "name": "bright-point",
-  "main": "./lib/bright-point",
+  "name": "brightpoint",
+  "main": "./lib/brightpoint",
   "version": "0.0.0",
   "description": "A short description of your package",
   "keywords": [],

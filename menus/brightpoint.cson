@@ -10,7 +10,7 @@
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'bright-point'
+      'label': 'Brightpoint'
       'submenu': [
         {
           'label': 'Remove All'
