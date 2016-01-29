@@ -14,6 +14,7 @@ class Debugger
     @markerLayer = @editor.addMarkerLayer({options: {maintainHistory: true}})
     @editorElement = atom.views.getView @editor
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
+    @editor.decorateMarkerLayer(@markerLayer, {type: 'line-number', class: 'red-circle' })
 
   unobservePane: ->
     @unsubscribe()
@@ -29,7 +30,9 @@ class Debugger
         else
           @createMarker(current)
 
-        @editor.decorateMarkerLayer(@markerLayer, {type: 'line-number', class: 'red-circle' })
+  scanCurrentPane: ->
+    @editor.scan /\bSTOP\b/g, ({range}) =>
+      @markerLayer.markBufferPosition(range.start)
 
   destroyAllMarkers: ->
     markers = @markerLayer.getMarkers()
@@ -38,7 +41,7 @@ class Debugger
       @deleteMarker(marker)
 
   getMarkersForLine: (position) ->
-    return @markerLayer.findMarkers(containsBufferPosition: position)
+    return @markerLayer.findMarkers(startBufferRow: position.row)
 
   deleteMarker: (marker) ->
     @editor.selectMarker(marker)

@@ -12,6 +12,7 @@ function generate()
   m.top.findNode("metaDataComponent").content = m.top.content.metaDataArray
   m.top.findNode("buttonPlay").text = getTextById("pdp.button.watchnow")
   m.top.findNode("button3").text = getTextById("pdp.button.button3")
+
     b2 = m.top.findNode("button2")
     b3 = m.top.findNode("button3")
 

@@ -19,6 +19,7 @@ module.exports = BrightPoint =
       if activeEditor && activeEditor.getGrammar().scopeName == 'source.brightscript'
         if @panes.indexOf(activePane) == -1
           debug = new Debugger()
+          debug.scanCurrentPane()
           debug.observeCurrentPane()
           @debuggers[activePane.id] = debug
 
