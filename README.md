@@ -1,4 +1,4 @@
-# bright-point package
+# Brightpoint package
 
 A short description of your package.
 

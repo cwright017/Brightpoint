@@ -1,4 +1,4 @@
-BrightPoint = require '../lib/bright-point'
+BrightPoint = require '../lib/brightpoint'
 
 # Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
 #
