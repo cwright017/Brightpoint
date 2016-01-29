@@ -16,12 +16,10 @@ class Debugger
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
 
   unobservePane: ->
-    console.log "unsubscribe"
     @unsubscribe()
 
   observeCurrentPane: =>
     @unsubscribe = $(@gutter).on 'click', (event) =>
-      if @editor.getGrammar().scopeName == 'source.brightscript'
         current = @editor.getCursorBufferPosition()
         current.row -= 1
         lineMarker = @getMarkersForLine(current)
