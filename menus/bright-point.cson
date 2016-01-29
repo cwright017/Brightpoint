@@ -13,8 +13,12 @@
       'label': 'bright-point'
       'submenu': [
         {
-          'label': 'Toggle'
-          'command': 'bright-point:toggle'
+          'label': 'Remove All'
+          'command': 'bright-point:removeAll'
+        },
+        {
+          'label': 'Remove All Active'
+          'command': 'bright-point:removeAllActive'
         }
       ]
     ]

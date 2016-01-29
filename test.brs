@@ -5,18 +5,20 @@ function init() as Void
 end function
 
 function generate()
+  STOP
 	m.top.findNode("title").text = m.top.content.title
 	m.top.findNode("packshotImage").uri = m.top.content.packshotUri
 	m.top.findNode("synopsis").text = m.top.content.synopsis
 	m.top.findNode("backgroundImage").uri = m.top.content.backgroundImageUri
+    STOP
     m.top.findNode("metaDataComponent").content = m.top.content.metaDataArray
-
     m.top.findNode("buttonPlay").text = getTextById("pdp.button.watchnow")
-    m.top.findNode("button2").text = getTextById("pdp.button.more")
     m.top.findNode("button3").text = getTextById("pdp.button.button3")
+    STOP
 
     b2 = m.top.findNode("button2")
     b3 = m.top.findNode("button3")
+    STOP
 
     m.buttonPlay.labelTrans = "[30, 0]"
     b2.labelTrans = "[30, 0]"

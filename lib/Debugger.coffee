@@ -11,7 +11,7 @@ class Debugger
 
   constructor: ->
     @editor = atom.workspace.getActiveTextEditor()
-    @markerLayer = @editor.addMarkerLayer({options: true})
+    @markerLayer = @editor.addMarkerLayer({options: {maintainHistory: true}})
     @editorElement = atom.views.getView @editor
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
 
@@ -21,7 +21,7 @@ class Debugger
 
   observeCurrentPane: =>
     @unsubscribe = $(@gutter).on 'click', (event) =>
-      # if editor.getGrammar().scopeName == 'source.brightscript'
+      if @editor.getGrammar().scopeName == 'source.brightscript'
         current = @editor.getCursorBufferPosition()
         current.row -= 1
         lineMarker = @getMarkersForLine(current)
@@ -32,6 +32,12 @@ class Debugger
           @createMarker(current)
 
         @editor.decorateMarkerLayer(@markerLayer, {type: 'line-number', class: 'red-circle' })
+
+  destroyAllMarkers: ->
+    markers = @markerLayer.getMarkers()
+
+    for marker in markers
+      @deleteMarker(marker)
 
   getMarkersForLine: (position) ->
     return @markerLayer.findMarkers(containsBufferPosition: position)
