@@ -40,7 +40,7 @@ module.exports = BrightPoint =
           @panes.push activePane
 
           activeEditor.onDidChange ->
-            debug.scanCurrentPane()
+            # debug.scanCurrentPane()
             console.log 'changed'
 
         @activePane = activePane
