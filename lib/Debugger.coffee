@@ -12,6 +12,12 @@ class Debugger
   constructor: ->
     @editor = atom.workspace.getActiveTextEditor()
     @markerLayer = @editor.addMarkerLayer({options: {maintainHistory: true}})
+
+    @markerLayer.onDidUpdate =>
+      console.log @markerLayer.getMarkers()
+
+
+
     @editorElement = atom.views.getView @editor
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
     @editor.decorateMarkerLayer(@markerLayer, {type: 'line-number', class: 'red-circle' })
@@ -20,19 +26,20 @@ class Debugger
     @unsubscribe()
 
   observeCurrentPane: =>
-    @unsubscribe = $(@gutter).on 'click', (event) =>
-        current = @editor.getCursorBufferPosition()
-        current.row -= 1
-        lineMarker = @getMarkersForLine(current)
+    @unsubscribe = $(@gutter).on 'click', '.line-number', (event) =>
+        if event.toElement.className != 'icon-right'
+          current = @editor.getCursorBufferPosition()
+          current.row -= 1
+          lineMarker = @getMarkersForLine(current)
 
-        if lineMarker.length
-          @deleteMarker(lineMarker[0])
-        else
-          @createMarker(current)
+          if lineMarker.length
+            @deleteMarker(lineMarker[0])
+          else
+            @createMarker(current)
 
   scanCurrentPane: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
-      @markerLayer.markBufferPosition(range.start)
+      @markerLayer.markBufferPosition(range.start, {invalidate: 'inside'})
 
   destroyAllMarkers: ->
     markers = @markerLayer.getMarkers()
@@ -52,4 +59,4 @@ class Debugger
     @editor.moveUp(0)
     @editor.insertNewlineAbove()
     @editor.insertText 'STOP'
-    @markerLayer.markBufferPosition(position)
+    @markerLayer.markBufferPosition(position, {invalidate: 'inside'})

@@ -4,10 +4,21 @@ $ = require 'jquery'
 
 
 module.exports = BrightPoint =
+  config:
+    markerColor:
+      title: 'Marker Color'
+      description: 'Color to use for breakpoint marker.'
+      type: 'color'
+      default: '#DB1D1D'
+
   subscriptions: null
   panes: []
   debuggers: {}
   activePane: null
+
+  observeSettingsPane: ->
+    atom.config.observe 'brightpoint.markerColor', (newValue) ->
+      console.log 'My configuration changed:', newValue
 
   activate: (state) ->
     @subscriptions = new CompositeDisposable
@@ -15,7 +26,7 @@ module.exports = BrightPoint =
     @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllActive': => @removeAllActive()
 
     openEditors = atom.workspace.getTextEditors()
-
+    @observeSettingsPane()
     # for editor in openEditors when @isBrightscript(editor)
 
     atom.workspace.observeActivePaneItem (activePane) =>
@@ -44,3 +55,11 @@ module.exports = BrightPoint =
 
   removeAllActive: ->
     @debuggers[@activePane.id].destroyAllMarkers()
+
+  consumeStatusBar: (statusBar) ->
+    # @statusBarTile = statusBar.addLeftTile(item: text, priority: 100)
+
+  deactivate: ->
+    # ...
+    # @statusBarTile?.destroy()
+    # @statusBarTile = null
