@@ -48,7 +48,7 @@ module.exports = BrightPoint =
         console.log @debuggers
 
     atom.workspace.onWillDestroyPaneItem (paneItem) =>
-      @removeEditorObject(paneItem.item)
+      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item 
 
       # if @isBrightscript(activeEditor)
       #   if @panes.indexOf(activePane) == -1
