@@ -13,9 +13,6 @@ module.exports = BrightPoint =
 
   subscriptions: null
 
-  panes: []
-  activePane: null
-
   editors: []
   debuggers: {}
 
@@ -50,14 +47,6 @@ module.exports = BrightPoint =
 
         console.log @debuggers
 
-
-
-        # if @debuggers.indexOf(editor) != -1
-        #   console.log 'brightscript changed - DELETE FROM OBJECT'
-        # else
-        #   if grammar.scopeName == 'source.brightscript'
-        #     console.log 'new bs!'
-
     atom.workspace.onWillDestroyPaneItem (paneItem) =>
       @removeEditorObject(paneItem.item)
 
@@ -84,14 +73,11 @@ module.exports = BrightPoint =
     @debuggers[editor.id].observers.dispose()
     delete @debuggers[editor.id]
 
-
   getEditors: ->
     return atom.workspace.getTextEditors()
 
   isBrightscript: (grammar) ->
     return grammar?.scopeName == 'source.brightscript'
-  # isBrightscript: (activeEditor) ->
-  #   return activeEditor && activeEditor.getGrammar().scopeName == 'source.brightscript'
 
   # removeAll: ->
   #   for k,v of @debuggers
