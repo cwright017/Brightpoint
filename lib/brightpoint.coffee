@@ -67,9 +67,12 @@ module.exports = BrightPoint =
       observers: new CompositeDisposable
     }
 
+    @debuggers[editor.id].debugger.observeEditor()
+
   removeEditorObject: (editor) ->
     # unsubscribe to events in debugger
-    console.log 'bs removed'
+    console.log 'bs removed' + editor.id
+    @debuggers[editor.id].debugger.destroy()
     @debuggers[editor.id].observers.dispose()
     delete @debuggers[editor.id]
 

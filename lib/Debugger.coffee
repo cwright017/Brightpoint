@@ -3,28 +3,35 @@ $ = require 'jquery'
 
 module.exports =
 class Debugger
-  @markerLayer:  null
+  @markerLayer: null
   @editor: null
   @editorElement: null
   @gutter: null
-  @unsubscribe: null
+  @observers: null
 
   constructor: (editor) ->
+    @observers = new CompositeDisposable
     @editor = editor
     @markerLayer = @editor.addMarkerLayer({options: {maintainHistory: true}})
 
-    @markerLayer.onDidUpdate =>
-      # console.log @markerLayer.getMarkers()
+    @observers.add @markerLayer.onDidUpdate =>
+      console.log @markerLayer.getMarkers()
 
     @editorElement = atom.views.getView @editor
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
     @editor.decorateMarkerLayer(@markerLayer, {type: 'line-number', class: 'red-circle' })
 
-  unobservePane: ->
-    @unsubscribe()
+  destroy: ->
+    console.log "destroying observers for " + @editor.id
 
-  observeCurrentPane: =>
-    @unsubscribe = $(@gutter).on 'click', '.line-number', (event) =>
+    @observers.dispose()
+    $(@gutter).off 'click', '.line-number'
+    @markerLayer.destroy()
+
+  observeEditor: =>
+    console.log "Observing " + @editor.id
+
+    $(@gutter).on 'click', '.line-number', (event) =>
         if event.toElement.className != 'icon-right'
           current = @editor.getCursorBufferPosition()
           current.row -= 1
@@ -35,15 +42,12 @@ class Debugger
           else
             @createMarker(current)
 
-  scanCurrentPane: ->
+  scanEditor: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
       @markerLayer.markBufferPosition(range.start, {invalidate: 'inside'})
 
   destroyAllMarkers: ->
-    markers = @markerLayer.getMarkers()
-
-    for marker in markers
-      @deleteMarker(marker)
+    @deleteMarker(marker) for marker in @markerLayer.getMarkers()
 
   getMarkersForLine: (position) ->
     return @markerLayer.findMarkers(startBufferRow: position.row)
