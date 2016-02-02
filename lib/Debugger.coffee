@@ -9,14 +9,12 @@ class Debugger
   @gutter: null
   @unsubscribe: null
 
-  constructor: ->
-    @editor = atom.workspace.getActiveTextEditor()
+  constructor: (editor) ->
+    @editor = editor
     @markerLayer = @editor.addMarkerLayer({options: {maintainHistory: true}})
 
     @markerLayer.onDidUpdate =>
-      console.log @markerLayer.getMarkers()
-
-
+      # console.log @markerLayer.getMarkers()
 
     @editorElement = atom.views.getView @editor
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
