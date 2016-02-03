@@ -3,7 +3,6 @@
 
 [![apm](https://img.shields.io/apm/v/brightpoint.svg?style=flat-square)](https://atom.io/packages/brightpoint)
 [![apm](https://img.shields.io/apm/dm/brightpoint.svg?style=flat-square)](https://atom.io/packages/brightpoint)
-[![apm](https://img.shields.io/apm/dm/brightpoint.svg?style=flat-square)](https://atom.io/packages/brightpoint)
 [![Slack Badge](https://img.shields.io/badge/Chat-atom.io%20slack-ff69b4.svg?style=flat-square)](http://atom-slack.herokuapp.com/)
 
 
