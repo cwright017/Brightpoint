@@ -2,12 +2,12 @@ Debugger = require './Debugger'
 {CompositeDisposable} = require 'atom'
 
 module.exports = BrightPoint =
-  # config:
-  #   markerColor:
-  #     title: 'Marker Color'
-  #     description: 'Color to use for breakpoint marker.'
-  #     type: 'color'
-  #     default: '#DB1D1D'
+  config:
+    markerColor:
+      title: 'Marker Color'
+    #   description: 'Color to use for breakpoint marker.'
+    #   type: 'color'
+    #   default: '#DB1D1D'
 
   subscriptions: null
 
