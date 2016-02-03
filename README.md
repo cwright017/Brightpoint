@@ -1,4 +1,4 @@
-# Brightpoint package
+# Brightpoint
 
 Brightpoint is an atom package to allow toggling breakpoints in Brightscript files by simply clicking on the line-number within the gutter.
 
