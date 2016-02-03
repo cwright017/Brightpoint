@@ -9,13 +9,9 @@ class Debugger
   @gutter: null
   @observers: null
 
-  constructor: (editor) ->
+  constructor: (@editor) ->
     @observers = new CompositeDisposable
-    @editor = editor
     @markerLayer = @editor.addMarkerLayer({options: {maintainHistory: true}})
-
-    @observers.add @markerLayer.onDidUpdate =>
-      console.log @markerLayer.getMarkers()
 
     @editorElement = atom.views.getView @editor
     @gutter = @editorElement.shadowRoot.querySelector('.gutter')
@@ -23,10 +19,9 @@ class Debugger
 
   destroy: ->
     console.log "destroying observers for " + @editor.id
-
     @observers.dispose()
-    $(@gutter).off 'click', '.line-number'
     @markerLayer.destroy()
+    $(@gutter).off 'click', '.line-number'
 
   observeEditor: =>
     console.log "Observing " + @editor.id
@@ -40,11 +35,11 @@ class Debugger
           if lineMarker.length
             @deleteMarker(lineMarker[0])
           else
-            @createMarker(current)
+            @createMarker(current.row)
 
   scanEditor: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
-      @markerLayer.markBufferPosition(range.start, {invalidate: 'inside'})
+      @markerLayer.markBufferPosition(range.start, {invalidate: 'touch'})
 
   destroyAllMarkers: ->
     @deleteMarker(marker) for marker in @markerLayer.getMarkers()
@@ -57,8 +52,12 @@ class Debugger
     @editor.deleteLine()
     marker.destroy()
 
-  createMarker: (position) ->
+  createMarker: (bufferRow) ->
     @editor.moveUp(0)
     @editor.insertNewlineAbove()
     @editor.insertText 'STOP'
-    @markerLayer.markBufferPosition(position, {invalidate: 'inside'})
+    range = [[bufferRow, 0], [bufferRow, 10]]
+    marker = @markerLayer.markBufferRange(range, {invalidate: 'touch'})
+
+    @observers.add marker.onDidChange ({isValid}) ->
+      marker.destroy() unless isValid
