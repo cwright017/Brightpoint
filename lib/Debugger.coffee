@@ -18,27 +18,28 @@ class Debugger
     @editor.decorateMarkerLayer(@markerLayer, {type: 'line-number', class: 'red-circle' })
 
   destroy: ->
-    console.log "destroying observers for " + @editor.id
     @observers.dispose()
     @markerLayer.destroy()
     $(@gutter).off 'click', '.line-number'
 
   observeEditor: =>
-    console.log "Observing " + @editor.id
-
     $(@gutter).on 'click', '.line-number', (event) =>
         if event.toElement.className != 'icon-right'
           current = @editor.getCursorBufferPosition()
           current.row -= 1
           lineMarker = @getMarkersForLine(current)
 
-          if lineMarker.length
-            @deleteMarker(lineMarker[0])
+          x = event.toElement.className.indexOf 'folded'
+
+          if x == -1
+            if lineMarker.length
+              @deleteMarker(lineMarker[0])
+            else
+              @createMarker(current.row)
           else
-            @createMarker(current.row)
+            @editor.unfoldBufferRow(current.row+1)
 
   scanEditor: ->
-    console.log 'scanning'
     @editor.scan /\bSTOP\b/g, ({range}) =>
       @markBuffer(range) unless @getMarkersForLine(range.start).length
 
@@ -64,8 +65,4 @@ class Debugger
       marker.destroy() unless isValid
 
   markBuffer: (range) ->
-    marker =  @markerLayer.markBufferRange(range, {invalidate: 'inside'})
-
-    console.log @markerLayer.getMarkers()
-
-    return marker
+    return @markerLayer.markBufferRange(range, {invalidate: 'inside'})

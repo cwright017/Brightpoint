@@ -57,9 +57,9 @@ module.exports = BrightPoint =
 
   removeEditorObject: (editor) ->
     # remove markers when closed?
-    @debuggers[editor.id].debugger.destroy()
-    @debuggers[editor.id].observers.dispose()
-    delete @debuggers[editor.id]
+    @debuggers[editor.id]?.debugger.destroy()
+    @debuggers[editor.id]?.observers.dispose()
+    delete @debuggers[editor.id]?
 
   getEditors: ->
     return atom.workspace.getTextEditors()
