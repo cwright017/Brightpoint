@@ -1,13 +1,19 @@
 Debugger = require './Debugger'
 {CompositeDisposable} = require 'atom'
+$ = require 'jquery'
 
 module.exports = BrightPoint =
   config:
     markerColor:
       title: 'Marker Color'
-    #   description: 'Color to use for breakpoint marker.'
-    #   type: 'color'
-    #   default: '#DB1D1D'
+      description: 'Color to use for breakpoint marker.'
+      type: 'color'
+      default: '#DB1D1D'
+    textColor:
+      title: 'Text Color'
+      description: 'Color to use for breakpoint marker text.'
+      type: 'color'
+      default: '#FFFFFF'
 
   subscriptions: null
 
@@ -15,8 +21,35 @@ module.exports = BrightPoint =
   debuggers: {}
 
   observeSettingsPane: ->
-    # atom.config.observe 'brightpoint.markerColor', (newValue) ->
-    #   console.log 'My configuration changed:', newValue
+    @subscriptions.add atom.config.observe 'brightpoint.markerColor', (color) ->
+      if $('#brightpoint-style').length == 0
+        $("<style type='text/css' id='brightpoint-style'>
+          atom-text-editor::shadow .gutter .line-number.red-circle{
+            color: " + atom.config.get('brightpoint.markerColor').toHexString() + ";
+            background-color: " + color.toHexString() + ";
+          }
+        </style>").appendTo("head");
+      else
+        $('#brightpoint-style').html(
+          "atom-text-editor::shadow .gutter .line-number.red-circle{
+            color: " + atom.config.get('brightpoint.markerColor').toHexString() + ";
+            background-color: " + color.toHexString() + ";
+          }")
+
+    @subscriptions.add atom.config.observe 'brightpoint.textColor', (color) ->
+      if $('#brightpoint-style').length == 0
+        $("<style type='text/css' id='brightpoint-style'>
+          atom-text-editor::shadow .gutter .line-number.red-circle{
+            color: " + color.toHexString() + ";
+            background-color: " + atom.config.get('brightpoint.markerColor').toHexString() + ";
+          }
+        </style>").appendTo("head");
+      else
+        $('#brightpoint-style').html(
+          "atom-text-editor::shadow .gutter .line-number.red-circle{
+            color: " + color.toHexString() + ";
+            background-color: " + atom.config.get('brightpoint.markerColor').toHexString() + ";
+          }")
 
   registerCommands: ->
     @subscriptions = new CompositeDisposable
@@ -27,14 +60,14 @@ module.exports = BrightPoint =
     @registerCommands()
     @observeSettingsPane()
 
-    atom.workspace.observeTextEditors (editor) =>
+    @subscriptions.add atom.workspace.observeTextEditors (editor) =>
       if @isBrightscript(editor.getGrammar())
         @createEditorObject(editor)
 
         @debuggers[editor.id].observers.add editor.onDidStopChanging =>
           @debuggers[editor.id].debugger.scanEditor()
 
-      editor.onDidChangeGrammar (grammar) =>
+      @subscriptions.add editor.onDidChangeGrammar (grammar) =>
         if @debuggers[editor.id]
           @removeEditorObject(editor)
         else if !@debuggers[editor.id] && @isBrightscript(grammar)
@@ -43,7 +76,7 @@ module.exports = BrightPoint =
           @debuggers[editor.id].observers.add editor.onDidChange =>
             @debuggers[editor.id].debugger.scanEditor()
 
-    atom.workspace.onWillDestroyPaneItem (paneItem) =>
+    @subscriptions.add atom.workspace.onWillDestroyPaneItem (paneItem) =>
       @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item
 
   createEditorObject: (editor) ->
@@ -59,7 +92,7 @@ module.exports = BrightPoint =
     # remove markers when closed?
     @debuggers[editor.id]?.debugger.destroy()
     @debuggers[editor.id]?.observers.dispose()
-    delete @debuggers[editor.id]?
+    delete @debuggers[editor.id]
 
   getEditors: ->
     return atom.workspace.getTextEditors()
@@ -78,7 +111,15 @@ module.exports = BrightPoint =
   # consumeStatusBar: (statusBar) ->
   #   # @statusBarTile = statusBar.addLeftTile(item: text, priority: 100)
   #
-  # deactivate: ->
-  #   # ...
-  #   # @statusBarTile?.destroy()
-  #   # @statusBarTile = null
+  deactivate: ->
+    for k,v of @debuggers
+      v.debugger?.destroy()
+      v.debugger = null
+      v.observers?.dispose()
+      v.observers = null
+      delete @debuggers[k]
+
+    @subscriptions.dispose()
+
+    # @statusBarTile?.destroy()
+    # @statusBarTile = null
