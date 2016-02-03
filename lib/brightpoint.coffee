@@ -2,12 +2,12 @@ Debugger = require './Debugger'
 {CompositeDisposable} = require 'atom'
 
 module.exports = BrightPoint =
-  config:
-    markerColor:
-      title: 'Marker Color'
-      description: 'Color to use for breakpoint marker.'
-      type: 'color'
-      default: '#DB1D1D'
+  # config:
+  #   markerColor:
+  #     title: 'Marker Color'
+  #     description: 'Color to use for breakpoint marker.'
+  #     type: 'color'
+  #     default: '#DB1D1D'
 
   subscriptions: null
 
@@ -15,13 +15,13 @@ module.exports = BrightPoint =
   debuggers: {}
 
   observeSettingsPane: ->
-    atom.config.observe 'brightpoint.markerColor', (newValue) ->
-      console.log 'My configuration changed:', newValue
+    # atom.config.observe 'brightpoint.markerColor', (newValue) ->
+    #   console.log 'My configuration changed:', newValue
 
   registerCommands: ->
     @subscriptions = new CompositeDisposable
-    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAll': => @removeAll()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllActive': => @removeAllActive()
+    # @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAll': => @removeAll()
+    # @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllActive': => @removeAllActive()
 
   activate: (state) ->
     @registerCommands()
@@ -31,8 +31,7 @@ module.exports = BrightPoint =
       if @isBrightscript(editor.getGrammar())
         @createEditorObject(editor)
 
-        @debuggers[editor.id].observers.add editor.onDidChange =>
-          console.log 'changed'
+        @debuggers[editor.id].observers.add editor.onDidStopChanging =>
           @debuggers[editor.id].debugger.scanEditor()
 
       editor.onDidChangeGrammar (grammar) =>
@@ -41,17 +40,13 @@ module.exports = BrightPoint =
         else if !@debuggers[editor.id] && @isBrightscript(grammar)
           @createEditorObject(editor)
 
-          @debuggers[editor.id].observers.add editor.onDidChange ->
-            console.log 'changed'
-
-
-        console.log @debuggers
+          @debuggers[editor.id].observers.add editor.onDidChange =>
+            @debuggers[editor.id].debugger.scanEditor()
 
     atom.workspace.onWillDestroyPaneItem (paneItem) =>
       @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item
 
   createEditorObject: (editor) ->
-    console.log 'new bs'
     @debuggers[editor.id] = {
       editor: editor,
       debugger: new Debugger(editor)
@@ -61,8 +56,7 @@ module.exports = BrightPoint =
     @debuggers[editor.id].debugger.observeEditor()
 
   removeEditorObject: (editor) ->
-    # unsubscribe to events in debugger
-    console.log 'bs removed' + editor.id
+    # remove markers when closed?
     @debuggers[editor.id].debugger.destroy()
     @debuggers[editor.id].observers.dispose()
     delete @debuggers[editor.id]
@@ -75,7 +69,8 @@ module.exports = BrightPoint =
 
   # removeAll: ->
   #   for k,v of @debuggers
-  #     v.destroyAllMarkers()
+  #     v.debugger.destroyAllMarkers()
+
   #
   # removeAllActive: ->
   #   @debuggers[@activePane.id].destroyAllMarkers()

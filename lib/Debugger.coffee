@@ -38,8 +38,9 @@ class Debugger
             @createMarker(current.row)
 
   scanEditor: ->
+    console.log 'scanning'
     @editor.scan /\bSTOP\b/g, ({range}) =>
-      @markBuffer range unless @getMarkersForLine(range.start).length
+      @markBuffer(range) unless @getMarkersForLine(range.start).length
 
   destroyAllMarkers: ->
     @deleteMarker(marker) for marker in @markerLayer.getMarkers()
@@ -63,5 +64,8 @@ class Debugger
       marker.destroy() unless isValid
 
   markBuffer: (range) ->
-    console.log range
-    return @markerLayer.markBufferRange(range, {invalidate: 'inside'})
+    marker =  @markerLayer.markBufferRange(range, {invalidate: 'inside'})
+
+    console.log @markerLayer.getMarkers()
+
+    return marker

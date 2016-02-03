@@ -1,33 +1,33 @@
-# See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
-'context-menu':
-  'atom-text-editor': [
-    'label': 'Brightpoint'
-    'submenu':[
-      {
-        'label': 'Remove all breakpoints'
-        'command': 'bright-point:removeAll'
-      },
-      {
-        'label': 'Remove all breakpoints in active pane'
-        'command': 'bright-point:removeAllActive'
-      }
-    ]
-  ]
-'menu': [
-  {
-    'label': 'Packages'
-    'submenu': [
-      'label': 'Brightpoint'
-      'submenu': [
-        {
-          'label': 'Remove All Breakpoints'
-          'command': 'bright-point:removeAll'
-        },
-        {
-          'label': 'Remove All Breakpoints In Active Pane'
-          'command': 'bright-point:removeAllActive'
-        }
-      ]
-    ]
-  }
-]
+# # See https://atom.io/docs/latest/hacking-atom-package-word-count#menus for more details
+# 'context-menu':
+#   'atom-text-editor': [
+#     'label': 'Brightpoint'
+#     'submenu':[
+#       {
+#         'label': 'Remove all breakpoints'
+#         'command': 'bright-point:removeAll'
+#       },
+#       {
+#         'label': 'Remove all breakpoints in active pane'
+#         'command': 'bright-point:removeAllActive'
+#       }
+#     ]
+#   ]
+# 'menu': [
+#   {
+#     'label': 'Packages'
+#     'submenu': [
+#       'label': 'Brightpoint'
+#       'submenu': [
+#         {
+#           'label': 'Remove All Breakpoints'
+#           'command': 'bright-point:removeAll'
+#         },
+#         {
+#           'label': 'Remove All Breakpoints In Active Pane'
+#           'command': 'bright-point:removeAllActive'
+#         }
+#       ]
+#     ]
+#   }
+# ]
