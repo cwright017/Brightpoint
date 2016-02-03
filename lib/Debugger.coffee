@@ -39,7 +39,7 @@ class Debugger
 
   scanEditor: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
-      @markerLayer.markBufferPosition(range.start, {invalidate: 'touch'})
+      @markBuffer range unless @getMarkersForLine(range.start).length
 
   destroyAllMarkers: ->
     @deleteMarker(marker) for marker in @markerLayer.getMarkers()
@@ -57,7 +57,11 @@ class Debugger
     @editor.insertNewlineAbove()
     @editor.insertText 'STOP'
     range = [[bufferRow, 0], [bufferRow, 10]]
-    marker = @markerLayer.markBufferRange(range, {invalidate: 'touch'})
+    marker = @markBuffer range
 
     @observers.add marker.onDidChange ({isValid}) ->
       marker.destroy() unless isValid
+
+  markBuffer: (range) ->
+    console.log range
+    return @markerLayer.markBufferRange(range, {invalidate: 'inside'})

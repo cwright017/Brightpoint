@@ -1,7 +1,5 @@
 Debugger = require './Debugger'
 {CompositeDisposable} = require 'atom'
-$ = require 'jquery'
-
 
 module.exports = BrightPoint =
   config:
@@ -33,8 +31,9 @@ module.exports = BrightPoint =
       if @isBrightscript(editor.getGrammar())
         @createEditorObject(editor)
 
-        @debuggers[editor.id].observers.add editor.onDidChange ->
+        @debuggers[editor.id].observers.add editor.onDidChange =>
           console.log 'changed'
+          @debuggers[editor.id].debugger.scanEditor()
 
       editor.onDidChangeGrammar (grammar) =>
         if @debuggers[editor.id]
@@ -45,19 +44,11 @@ module.exports = BrightPoint =
           @debuggers[editor.id].observers.add editor.onDidChange ->
             console.log 'changed'
 
+
         console.log @debuggers
 
     atom.workspace.onWillDestroyPaneItem (paneItem) =>
-      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item 
-
-      # if @isBrightscript(activeEditor)
-      #   if @panes.indexOf(activePane) == -1
-      #     debug = new Debugger()
-      #     debug.scanCurrentPane()
-      #     debug.observeCurrentPane()
-      #     @debuggers[activePane.id] = debug
-      #     @panes.push activePane
-
+      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item
 
   createEditorObject: (editor) ->
     console.log 'new bs'
