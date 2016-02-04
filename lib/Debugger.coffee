@@ -41,7 +41,7 @@ class Debugger
 
   scanEditor: ->
     @editor.scan /^\s*\bSTOP\b/g, ({range}) =>
-      marker = @markBuffer(range) unless @getMarkersForLine(range.start).length
+      marker = @markBuffer(range, false) unless @getMarkersForLine(range.start).length
 
       if marker
         @observers.add marker.onDidChange ({isValid}) ->
@@ -74,4 +74,4 @@ class Debugger
       marker.destroy() unless isValid
 
   markBuffer: (range, newLine=false) ->
-    return @markerLayer.markBufferRange(range, {invalidate: 'inside', newLine: newLine})
+    return @markerLayer.markBufferRange(range, {invalidate: 'touch', newLine: newLine})
