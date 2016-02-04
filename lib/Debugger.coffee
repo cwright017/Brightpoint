@@ -40,7 +40,7 @@ class Debugger
             @editor.unfoldBufferRow(current.row+1)
 
   scanEditor: ->
-    @editor.scan /^\s*\bSTOP\b/g, ({range}) =>
+    @editor.scan /\bSTOP\b/g, ({range}) =>
       marker = @markBuffer(range, false) unless @getMarkersForLine(range.start).length
 
       if marker
