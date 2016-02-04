@@ -63,6 +63,7 @@ module.exports = BrightPoint =
     @subscriptions.add atom.workspace.observeTextEditors (editor) =>
       if @isBrightscript(editor.getGrammar())
         @createEditorObject(editor)
+        @debuggers[editor.id].debugger.scanEditor()
 
         @debuggers[editor.id].observers.add editor.onDidStopChanging =>
           @debuggers[editor.id].debugger.scanEditor()
@@ -73,7 +74,7 @@ module.exports = BrightPoint =
         else if !@debuggers[editor.id] && @isBrightscript(grammar)
           @createEditorObject(editor)
 
-          @debuggers[editor.id].observers.add editor.onDidChange =>
+          @debuggers[editor.id].observers.add editor.onDidStopChanging =>
             @debuggers[editor.id].debugger.scanEditor()
 
     @subscriptions.add atom.workspace.onWillDestroyPaneItem (paneItem) =>

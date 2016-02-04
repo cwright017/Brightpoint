@@ -1,8 +1,6 @@
-## 0.2.2 - beta
-* Toggling breakpoints
-* Ability to pick marker / text color in settings
+## 0.2.3 - BETA
+* Fixed issue with autocomplete not triggering marker
 
 ## Known issues
-* Modifying breakpoint manually can cause issues with the marker
 * No way to mass remove breakpoints
 * Breakpoints are not removed when files are closed

@@ -41,8 +41,12 @@ class Debugger
 
   scanEditor: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
-      @markBuffer(range) unless @getMarkersForLine(range.start).length
+      marker = @markBuffer(range) unless @getMarkersForLine(range.start).length
 
+      if marker
+        @observers.add marker.onDidChange ({isValid}) ->
+          marker.destroy() unless isValid
+          
   destroyAllMarkers: ->
     @deleteMarker(marker) for marker in @markerLayer.getMarkers()
 
@@ -58,11 +62,11 @@ class Debugger
     @editor.moveUp(0)
     @editor.insertNewlineAbove()
     @editor.insertText 'STOP'
-    range = [[bufferRow, 0], [bufferRow, 10]]
+    range = [[bufferRow, 0], [bufferRow, Infinity]]
     marker = @markBuffer range
 
     @observers.add marker.onDidChange ({isValid}) ->
       marker.destroy() unless isValid
 
   markBuffer: (range) ->
-    return @markerLayer.markBufferRange(range, {invalidate: 'inside'})
+    return @markerLayer.markBufferRange(range, {invalidate: 'touch'})
