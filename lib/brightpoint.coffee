@@ -112,6 +112,7 @@ module.exports = BrightPoint =
   # consumeStatusBar: (statusBar) ->
   #   # @statusBarTile = statusBar.addLeftTile(item: text, priority: 100)
   #
+  
   deactivate: ->
     for k,v of @debuggers
       v.debugger?.destroy()

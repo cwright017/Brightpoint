@@ -29,9 +29,7 @@ class Debugger
           current.row -= 1
           lineMarker = @getMarkersForLine(current)
 
-          x = event.toElement.className.indexOf 'folded'
-
-          if x == -1
+          if event.toElement.className.indexOf('folded') == -1
             if lineMarker.length
               @deleteMarker(lineMarker[0])
             else
@@ -41,11 +39,12 @@ class Debugger
 
   scanEditor: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
-      marker = @markBuffer(range, false) unless @getMarkersForLine(range.start).length
+      @editor.scanInBufferRange /^[^']*\bSTOP\b/, [[range.start.row, 0], [range.end.row, Infinity]], ({range}) =>
+        marker = @markBuffer(range, false) unless @getMarkersForLine(range.start).length
 
-      if marker
-        @observers.add marker.onDidChange ({isValid}) ->
-          marker.destroy() unless isValid
+        if marker
+          @observers.add marker.onDidChange ({isValid}) ->
+            marker.destroy() unless isValid
 
   destroyAllMarkers: ->
     @deleteMarker(marker) for marker in @markerLayer.getMarkers()
@@ -68,7 +67,7 @@ class Debugger
     @editor.insertText 'STOP'
 
     range = [[bufferRow, 0], [bufferRow, Infinity]]
-    marker = @markBuffer range, newLine
+    marker = @markBuffer(range, newLine)
 
     @observers.add marker.onDidChange ({isValid}) ->
       marker.destroy() unless isValid
