@@ -1,4 +1,4 @@
-## 0.2.4 - BETA
+## 0.3.0 - BETA
 * Only adds a new line if a non-empty line is clicked, else it will just add a breakpoint.
 * Comments handled :tada:
 
