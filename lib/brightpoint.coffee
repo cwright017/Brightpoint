@@ -79,7 +79,7 @@ module.exports = BrightPoint =
             @debuggers[editor.getBuffer().id][editor.id].debugger.scanEditor()
 
     @subscriptions.add atom.workspace.onDidDestroyPaneItem (paneItem) =>
-      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item
+      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item && @isBrightscript(paneItem.item.getGrammar())
 
   createEditorObject: (editor) ->
     @debuggers[editor.getBuffer().id] = {
@@ -111,9 +111,13 @@ module.exports = BrightPoint =
       for k,v of @debuggers[k]
         v.debugger?.destroyAllMarkers()
 
+    atom.notifications.addSuccess("Success: All breakpoints removed", dismissable: true);
+
   removeAllFromCurrentFile: ->
     editor = atom.workspace.getActiveTextEditor()
     @debuggers[editor.getBuffer().id][editor.id].debugger.destroyAllMarkers()
+
+    atom.notifications.addSuccess("Success: All breakpoints removed from " + editor.getTitle(), dismissable: true);
 
   #
   # consumeStatusBar: (statusBar) ->
