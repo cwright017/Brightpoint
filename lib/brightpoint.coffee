@@ -54,7 +54,7 @@ module.exports = BrightPoint =
   registerCommands: ->
     @subscriptions = new CompositeDisposable
     @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAll': => @removeAll()
-    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllActive': => @removeAllFromCurrentFile()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllCurrent': => @removeAllFromCurrentFile()
 
   activate: (state) ->
     @registerCommands()
