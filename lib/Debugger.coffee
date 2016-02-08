@@ -40,7 +40,7 @@ class Debugger
   scanEditor: ->
     @editor.scan /\bSTOP\b/g, ({range}) =>
       @editor.scanInBufferRange /^[^']*\bSTOP\b/, [[range.start.row, 0], [range.end.row, Infinity]], ({range}) =>
-        marker = @markBuffer(range, false) unless @getMarkersForLine(range.start).length
+        marker = @markBuffer(range, true) unless @getMarkersForLine(range.start).length
 
         if marker
           @observers.add marker.onDidChange ({isValid}) ->
