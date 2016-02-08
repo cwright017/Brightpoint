@@ -79,7 +79,7 @@ module.exports = BrightPoint =
             @debuggers[editor.getBuffer().id][editor.id].debugger.scanEditor()
 
     @subscriptions.add atom.workspace.onDidDestroyPaneItem (paneItem) =>
-      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item && @isBrightscript(paneItem.item.getGrammar())
+      @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item
 
   createEditorObject: (editor) ->
     @debuggers[editor.getBuffer().id] = {
@@ -94,11 +94,11 @@ module.exports = BrightPoint =
     @debuggers[editor.getBuffer().id][editor.id].debugger.observeEditor()
 
   removeEditorObject: (editor) ->
-    @debuggers[editor.getBuffer().id][editor.id].debugger.destroy()
-    @debuggers[editor.getBuffer().id][editor.id].observers.dispose()
+    @debuggers[editor.getBuffer().id]?[editor.id]?.debugger.destroy()
+    @debuggers[editor.getBuffer().id]?[editor.id]?.observers.dispose()
     delete @debuggers[editor.getBuffer().id]?[editor.id]
 
-    delete @debuggers[editor.getBuffer().id] unless Object.keys(@debuggers[editor.getBuffer().id]).length
+    delete @debuggers[editor.getBuffer().id]? unless Object.keys(@debuggers[editor.getBuffer().id]?).length
 
   getEditors: ->
     return atom.workspace.getTextEditors()
