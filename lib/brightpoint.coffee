@@ -111,13 +111,13 @@ module.exports = BrightPoint =
       for k,v of @debuggers[k]
         v.debugger?.destroyAllMarkers()
 
-    atom.notifications.addSuccess("Success: All breakpoints removed", dismissable: true);
+    atom.notifications.addSuccess("Success: All breakpoints removed");
 
   removeAllFromCurrentFile: ->
     editor = atom.workspace.getActiveTextEditor()
     @debuggers[editor.getBuffer().id][editor.id].debugger.destroyAllMarkers()
 
-    atom.notifications.addSuccess("Success: All breakpoints removed from " + editor.getTitle(), dismissable: true);
+    atom.notifications.addSuccess("Success: All breakpoints removed from " + editor.getTitle());
 
   #
   # consumeStatusBar: (statusBar) ->
