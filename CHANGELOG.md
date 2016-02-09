@@ -1,7 +1,7 @@
-## 0.3.0 - BETA
-* Only adds a new line if a non-empty line is clicked, else it will just add a breakpoint.
-* Comments handled :tada:
+## 0.3.1 - BETA
+* Fixes issue with new lines not being added if breakpoints added next to each other
 
 ## Known issues
+* No way to find breakpoints
 * No way to mass remove breakpoints
 * Breakpoints are not removed when files are closed
