@@ -53,8 +53,8 @@ module.exports = BrightPoint =
 
   registerCommands: ->
     @subscriptions = new CompositeDisposable
-    # @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAll': => @removeAll()
-    # @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllActive': => @removeAllActive()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAll': => @removeAll()
+    @subscriptions.add atom.commands.add 'atom-workspace', 'bright-point:removeAllCurrent': => @removeAllFromCurrentFile()
 
   activate: (state) ->
     @registerCommands()
@@ -63,37 +63,42 @@ module.exports = BrightPoint =
     @subscriptions.add atom.workspace.observeTextEditors (editor) =>
       if @isBrightscript(editor.getGrammar())
         @createEditorObject(editor)
-        @debuggers[editor.id].debugger.scanEditor()
 
-        @debuggers[editor.id].observers.add editor.onDidStopChanging =>
-          @debuggers[editor.id].debugger.scanEditor()
+        @debuggers[editor.getBuffer().id][editor.id].debugger.scanEditor()
+
+        @debuggers[editor.getBuffer().id][editor.id].observers.add editor.onDidStopChanging =>
+          @debuggers[editor.getBuffer().id][editor.id].debugger.scanEditor()
 
       @subscriptions.add editor.onDidChangeGrammar (grammar) =>
-        if @debuggers[editor.id]
+        if @debuggers[editor.getBuffer().id]?[editor.id]
           @removeEditorObject(editor)
-        else if !@debuggers[editor.id] && @isBrightscript(grammar)
+        else if !@debuggers[editor.getBuffer().id]?[editor.id] && @isBrightscript(grammar)
           @createEditorObject(editor)
 
-          @debuggers[editor.id].observers.add editor.onDidStopChanging =>
-            @debuggers[editor.id].debugger.scanEditor()
+          @debuggers[editor.getBuffer().id][editor.id].observers.add editor.onDidStopChanging =>
+            @debuggers[editor.getBuffer().id][editor.id].debugger.scanEditor()
 
-    @subscriptions.add atom.workspace.onWillDestroyPaneItem (paneItem) =>
+    @subscriptions.add atom.workspace.onDidDestroyPaneItem (paneItem) =>
       @removeEditorObject paneItem.item if atom.workspace.isTextEditor paneItem.item
 
   createEditorObject: (editor) ->
-    @debuggers[editor.id] = {
-      editor: editor,
+    @debuggers[editor.getBuffer().id] = {
+    } unless @debuggers[editor.getBuffer().id]
+
+    @debuggers[editor.getBuffer().id][editor.id] = {
+      editor: editor
       debugger: new Debugger(editor)
       observers: new CompositeDisposable
-    }
+    } unless @debuggers[editor.getBuffer().id][editor.id]
 
-    @debuggers[editor.id].debugger.observeEditor()
+    @debuggers[editor.getBuffer().id][editor.id].debugger.observeEditor()
 
   removeEditorObject: (editor) ->
-    # remove markers when closed?
-    @debuggers[editor.id]?.debugger.destroy()
-    @debuggers[editor.id]?.observers.dispose()
-    delete @debuggers[editor.id]
+    @debuggers[editor.getBuffer().id]?[editor.id]?.debugger.destroy()
+    @debuggers[editor.getBuffer().id]?[editor.id]?.observers.dispose()
+    delete @debuggers[editor.getBuffer().id]?[editor.id]
+
+    delete @debuggers[editor.getBuffer().id]? unless Object.keys(@debuggers[editor.getBuffer().id]?).length
 
   getEditors: ->
     return atom.workspace.getTextEditors()
@@ -101,25 +106,33 @@ module.exports = BrightPoint =
   isBrightscript: (grammar) ->
     return grammar?.scopeName == 'source.brightscript'
 
-  # removeAll: ->
-  #   for k,v of @debuggers
-  #     v.debugger.destroyAllMarkers()
+  removeAll: ->
+    for k,v of @debuggers
+      for k,v of @debuggers[k]
+        v.debugger?.destroyAllMarkers()
 
-  #
-  # removeAllActive: ->
-  #   @debuggers[@activePane.id].destroyAllMarkers()
+    atom.notifications.addSuccess("Success: All breakpoints removed");
+
+  removeAllFromCurrentFile: ->
+    editor = atom.workspace.getActiveTextEditor()
+    @debuggers[editor.getBuffer().id][editor.id].debugger.destroyAllMarkers()
+
+    atom.notifications.addSuccess("Success: All breakpoints removed from " + editor.getTitle());
+
   #
   # consumeStatusBar: (statusBar) ->
   #   # @statusBarTile = statusBar.addLeftTile(item: text, priority: 100)
   #
-  
+
   deactivate: ->
     for k,v of @debuggers
-      v.debugger?.destroy()
-      v.debugger = null
-      v.observers?.dispose()
-      v.observers = null
-      delete @debuggers[k]
+      for k,v of @debuggers[k]
+        v.debugger?.destroy()
+        v.debugger = null
+        v.observers?.dispose()
+        v.observers = null
+        delete @debuggers[k]
+      delete @debuggers[k] unless Object.keys(@debuggers[k]).length
 
     @subscriptions.dispose()
 
